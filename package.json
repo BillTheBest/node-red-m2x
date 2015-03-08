@@ -1,11 +1,11 @@
 {
   "name": "node-red-m2x",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "A Node-RED node to AT&T M2X",
   "dependencies": {
     "m2x": "2.1.4",
     "log-driver": "1.2.5",
-    "async" : "0.9.0"
+    "async": "0.9.0"
   },
   "repository": {
     "type": "git",
