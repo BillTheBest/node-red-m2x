@@ -10,6 +10,7 @@ module.exports = function (RED) {
 
     var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
     var ARGUMENT_NAMES = /([^\s,]+)/g;
+    var OPTIONAL_PARAMETER = true;
     function getParamNames(func) {
         var fnStr = func.toString().replace(STRIP_COMMENTS, '');
         var result = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
@@ -97,7 +98,7 @@ module.exports = function (RED) {
                         function(item, callback){
                             try {
                                 var parameter = parse_argument(item, msg);     
-                                log.debug("PARAMETER "+ parameter);
+                                log.debug("PARAMETER [" + item + "] Value [" + parameter +"]");
                                 callback(null, parameter);
                             } catch (e){
                                 log.debug("ERROR "+ e);
@@ -125,7 +126,9 @@ module.exports = function (RED) {
                     case "key":
                         return set_parameter(msg, msg.topic_id, "msg.topic_id is empty  for " + msg.action);
                         break;
-                    case 'params' :
+                    case 'params' :                        
+                        return set_parameter(msg, msg.payload, "msg.payload is empty  for " + msg.action, OPTIONAL_PARAMETER);                        
+                        break;
                     case 'values':
                         return set_parameter(msg, msg.payload, "msg.payload is empty  for " + msg.action);
                         break;
@@ -165,8 +168,20 @@ module.exports = function (RED) {
             };
         });
 
-        function set_parameter(msg, msg_field, error_msg) {
-            if (typeof (msg_field) === 'undefined') {
+        /**
+         * Populate the parameters to the M2X Rest Clients API
+         * @param {type} msg
+         * @param {type} msg_field
+         * @param {type} error_msg
+         * @param {type} optional - Defualt value false/undefined - is the parameters is optional
+         * @returns {undefined}
+         */
+        function set_parameter(msg, msg_field, error_msg, optional) {
+            if (typeof (msg_field) === 'undefined') {               
+                if (optional === true) {
+                    log.info(error_msg + " Not mandatory, continue without");
+                    return; // Returns undefined
+                } 
                 _this.handle_msg_failure(msg, INPUT_ERROR_CODE, error_msg);
                 throw "Cannot find message field " + error_msg;
             } else {
