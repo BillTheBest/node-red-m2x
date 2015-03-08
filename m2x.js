@@ -127,7 +127,7 @@ module.exports = function (RED) {
                         break;
                     case 'params' :
                     case 'values':
-                        return set_parameter(msg, msg.payload, "msg.payoad is empty  for " + msg.action);
+                        return set_parameter(msg, msg.payload, "msg.payload is empty  for " + msg.action);
                         break;
                     case 'name' :
                     case 'triggerID':
