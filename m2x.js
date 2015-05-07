@@ -54,10 +54,6 @@ module.exports = function (RED) {
         var API_VER = "v2";
         _this.feedNode = RED.nodes.getNode(_this.node.feed);
         //_this.apiVer = n.apiVer;
-        if (!_this.feedNode)
-        {
-            _this.error("missing m2x feed configuration");
-        }
         _this.on("input", function (msg) {
             // Override Configured API Key with the one on the request, 
             // The feed ID is allways used by the one in the request
@@ -67,7 +63,8 @@ module.exports = function (RED) {
             // FindM2X Key on coniguration/messge
             if (!msg || !msg.m2x_key || !msg.req.headers || (api_key = msg.m2x_key) === null) {
                 if (typeof (_this.feedNode) === 'undefined') {
-                    return _this.handle_msg_failure(msg, 409, "failure - missing M2X feed configuration and no mwx_key in msg");
+                    _this.error("missing m2x feed configuration");
+                    return _this.handle_msg_failure(msg, 409, "failure - missing M2X feed configuration and no m2x_key in msg");
                 }
                 log.info("Using configured X-M2X-KEY [" + _this.feedNode.apiKey + "]");
                 _this.m2xClient = new m2x(_this.feedNode.apiKey, M2X_API_SERVER + API_VER);
