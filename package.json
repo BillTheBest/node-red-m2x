@@ -1,6 +1,6 @@
 {
   "name": "node-red-m2x",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "description": "A Node-RED node to AT&T M2X",
   "dependencies": {
     "m2x": "2.1.9",
