@@ -61,7 +61,7 @@ module.exports = function (RED) {
             var api_key;
 
             // FindM2X Key on coniguration/messge
-            if (!msg || !msg.m2x_key || !msg.req.headers || (api_key = msg.m2x_key) === null) {
+            if (!msg || !msg.m2x_key || (api_key = msg.m2x_key) === null) {
                 if (typeof (_this.feedNode) === 'undefined') {
                     _this.error("missing m2x feed configuration");
                     return _this.handle_msg_failure(msg, 409, "failure - missing M2X feed configuration and no m2x_key in msg");
