@@ -28,7 +28,7 @@ describe('m2x node', function() {
     before(function(done) {
         helper.startServer(done);
     });
-    
+
     afterEach(function() {
         helper.unload();
     });
@@ -45,7 +45,7 @@ describe('m2x node', function() {
                 msg.payload.devices.should.be.an.Array;
                 done();
             });
-            n1.receive({payload:{ "q" : "m2x","limit" : "5"}, topic: "devices", action : "catalog"});            
+            n1.receive({payload:{ "q" : "m2x","limit" : "5"}, topic: "devices", action : "catalog"});
         });
     });
     it('should create new device', function(done) {
@@ -56,16 +56,16 @@ describe('m2x node', function() {
             n2.on("input", function(msg) {
                 msg.payload.should.have.properties({
                     "name" : "testing",
-                    "description" : "A Testing device",                     
+                    "description" : "A Testing device",
                     "visibility" : "private"
                 });
                 done();
             });
             n1.receive({payload:{ "name" : "testing",
-                                  "description" : "A Testing device", 
-                                  "visibility" : "private"}, 
+                                  "description" : "A Testing device",
+                                  "visibility" : "private"},
                         topic  : "devices",
-                        action : "create"});            
+                        action : "create"});
         });
     });
     it('should create new trigger', function(done) {
@@ -91,12 +91,12 @@ describe('m2x node', function() {
                                   "value": 30,
                                   "callback_url": "https://scrum-api-flow.att.io/sandbox/https/chenfli/in/flow/denis",
                                   "status": "enabled",
-                                  "send_location": true }, 
+                                  "send_location": true },
                         topic    : "devices",
                         action   : "createTrigger",
-                        topic_id : "1b2f98cc3b31b527c27ba14fe46c615c"});                                               
+                        topic_id : "1b2f98cc3b31b527c27ba14fe46c615c"});
         });
-    });    
+    });
     it('should view trigger', function(done) {
         var flow = flow_initer.build_flow();
         helper.load(m2xNode, flow, function() {
@@ -116,9 +116,9 @@ describe('m2x node', function() {
             n1.receive({topic    : "devices",
                         action   : "trigger",
                         topic_id : "1b2f98cc3b31b527c27ba14fe46c615c",
-                        sub_topic_id : "AUtGaZbkTjhBGEzH1DCo"});            
+                        sub_topic_id : "AUtGaZbkTjhBGEzH1DCo"});
         });
-    });   
+    });
     it('should list trigger', function(done) {
         var flow = flow_initer.build_flow();
         helper.load(m2xNode, flow, function() {
@@ -130,9 +130,9 @@ describe('m2x node', function() {
             });
             n1.receive({topic    : "devices",
                         action   : "triggers",
-                        topic_id : "1b2f98cc3b31b527c27ba14fe46c615c"});            
+                        topic_id : "1b2f98cc3b31b527c27ba14fe46c615c"});
         });
-    });    
+    });
     it('should update trigger', function(done) {
         var flow = flow_initer.build_flow();
         helper.load(m2xNode, flow, function() {
@@ -146,9 +146,9 @@ describe('m2x node', function() {
                         action   : "updateTrigger",
                         topic_id : "1b2f98cc3b31b527c27ba14fe46c615c",
                         sub_topic_id : "AUtpxLWkTjhBGEzH2Jli",
-                        payload  : {"value": 200}});            
+                        payload  : {"value": 200}});
         });
-    });     
+    });
     it('should test trigger', function(done) {
         var flow = flow_initer.build_flow();
         helper.load(m2xNode, flow, function() {
@@ -161,8 +161,8 @@ describe('m2x node', function() {
             n1.receive({topic    : "devices",
                         action   : "updateTrigger",
                         topic_id : "1b2f98cc3b31b527c27ba14fe46c615c",
-                        sub_topic_id : "hot"});            
+                        sub_topic_id : "hot"});
         });
-    });    
-    
+    });
+
 });

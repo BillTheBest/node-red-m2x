@@ -23,7 +23,7 @@ describe('m2x node', function() {
     before(function(done) {
         helper.startServer(done);
     });
-    
+
     afterEach(function() {
         helper.unload();
     });
@@ -42,15 +42,15 @@ describe('m2x node', function() {
                      done();
                  });
                  n1.receive({topic  : "distributions",
-                             action : "create",                             
+                             action : "create",
                              payload : { "name"        : "test_distrib",
                                          "description" : "m2x node red testing distrib",
                                          "visibility"  : "private",
                                          "base_device" : "654f4684d54a88591c2b1f1da0fd621a"}
-                            });                
-        });                                               
+                            });
+        });
     });
-    
+
     it('should create device', function(done) {
         var flow = flow_initer.build_flow();
         helper.load(m2xNode, flow, function() {
@@ -65,16 +65,16 @@ describe('m2x node', function() {
                      done();
                  });
                  n1.receive({topic  : "distributions",
-                             action : "addDevice", 
+                             action : "addDevice",
                              topic_id : "1ee40764159d8b7bbc51e79916309e85",
                              sub_topic_id : "testing_distrib_device",
                              payload : { "name"        : "test_distrib",
                                          "description" : "m2x node red testing distrib",
                                          "visibility"  : "private",
                                          "base_device" : "654f4684d54a88591c2b1f1da0fd621a"}
-                            });                
-        });                                               
-    });    
+                            });
+        });
+    });
     //TODO:  SHOULD Be run with -t 5000
     it('should create trigger', function(done) {
         var flow = flow_initer.build_flow();
@@ -97,14 +97,14 @@ describe('m2x node', function() {
                                        "condition": ">",
                                        "value": 30,
                                        "callback_url": "https://scrum-api-flow.att.io/sandbox/https/chenfli/in/flow",
-                                       "status": "enabled" }, 
+                                       "status": "enabled" },
                              topic    : "distributions",
                              action   : "createTrigger",
-                             topic_id : "1ee40764159d8b7bbc51e79916309e85"});                                               
+                             topic_id : "1ee40764159d8b7bbc51e79916309e85"});
         });
      });
-     
-       
+
+
     it('should delete trigger', function(done) {
         var flow = flow_initer.build_flow();
         helper.load(m2xNode, flow, function() {
@@ -118,10 +118,10 @@ describe('m2x node', function() {
                  n1.receive({topic    : "distributions",
                              action   : "deleteTrigger",
                              topic_id : "1ee40764159d8b7bbc51e79916309e85",
-                             sub_topic_id :"AUtanUPpTjhBGEzH1rnX" });                                               
+                             sub_topic_id :"AUtanUPpTjhBGEzH1rnX" });
         });
      });
-     
+
     it('should delete distribution', function(done) {
         var flow = flow_initer.build_flow();
         helper.load(m2xNode, flow, function() {
@@ -134,10 +134,10 @@ describe('m2x node', function() {
                  });
                  n1.receive({topic    : "distributions",
                              action   : "deleteDistribution",
-                             topic_id : "c145918984bf63dfcd6c94d2b0e07dc4"});                                               
+                             topic_id : "c145918984bf63dfcd6c94d2b0e07dc4"});
         });
-     });     
-     
+     });
+
     it('should delete a data stream', function(done) {
         var flow = flow_initer.build_flow();
         helper.load(m2xNode, flow, function() {
@@ -151,7 +151,7 @@ describe('m2x node', function() {
                  n1.receive({topic    : "distributions",
                              action   : "deleteDistribution",
                              topic_id : "3d6ecf7f2e3561dfc1a6bea16182a29f",
-                             sub_topic_id : "Thermo"});                                               
+                             sub_topic_id : "Thermo"});
         });
-     });          
+     });
 });

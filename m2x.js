@@ -1,7 +1,7 @@
 module.exports = function (RED) {
     var m2x = require('m2x');
     var log = require('log-driver').logger;
-    var async = require('async');    
+    var async = require('async');
     var M2X_API_SERVER = "https://api-m2x.att.com/";
     // CF  - General Error code in case of error
     var ERROR_CODE = 500;
@@ -27,19 +27,19 @@ module.exports = function (RED) {
         }
         return methods;
     }
-    
+
     function cleanForNextNode(msg) {
         // CF: Clear the clatter for the next node
         try {
             delete msg.topic;
             delete msg.topic_id;
             delete msg.sub_topic_id;
-            delete msg.action;                
+            delete msg.action;
         } catch (e) {
            log.error("WARNING - cannot delete msg input field, probably working on STRICT mode")
         }
     }
-    
+
 
     function M2XFeedNode(n) {
         var _this = this;
@@ -55,7 +55,7 @@ module.exports = function (RED) {
         _this.feedNode = RED.nodes.getNode(_this.node.feed);
         //_this.apiVer = n.apiVer;
         _this.on("input", function (msg) {
-            // Override Configured API Key with the one on the request, 
+            // Override Configured API Key with the one on the request,
             // The feed ID is allways used by the one in the request
             // and fail over to the configured one.
             var api_key;
@@ -84,17 +84,17 @@ module.exports = function (RED) {
             //TODO : validate why devices.listTriggers  pass this parttrig
             // CF: Verification - from some reason the above doesn't allways works
             if (!(typeof (_this.m2xClient[topic][msg.action]) === 'function')) {
-                this.handle_msg_failure(msg, INPUT_ERROR_CODE, 
+                this.handle_msg_failure(msg, INPUT_ERROR_CODE,
                 "Cannot find " + msg.action +" in " + topic + " validate agains m2x client node, API is applicable");
             }
             // Get list of parameters for that method
             var arguments = getParamNames(_this.m2xClient[topic][msg.action]);
             log.debug(arguments);
-            // Iterate on all arguments and attach the relevnt parameters          
+            // Iterate on all arguments and attach the relevnt parameters
             async.map(  arguments,
                         function(item, callback){
                             try {
-                                var parameter = parse_argument(item, msg);     
+                                var parameter = parse_argument(item, msg);
                                 log.debug("PARAMETER [" + item + "] Value [" + parameter +"]");
                                 callback(null, parameter);
                             } catch (e){
@@ -103,28 +103,28 @@ module.exports = function (RED) {
                             }
                         },
                         function(err, result) {
-                            if(!err) {                  
-                                call_m2x(result ,msg);                            
+                            if(!err) {
+                                call_m2x(result ,msg);
                             } else {
                                 log.error("Could not invoke call to m2x since " +
-                                          "incoming node request could not be parsed, flow continued. [" +err + "]");                                
+                                          "incoming node request could not be parsed, flow continued. [" +err + "]");
                                 var err_msg = {};
                                 err_msg.statusCode = INPUT_ERROR_CODE;
                                 err_msg.payload = err;
                                 _this.node.send(err_msg);
                             }
                         }
-            );            
-            
-            
+            );
+
+
             function parse_argument(item, msg) {
                 switch (item) {
                     case "id":
                     case "key":
                         return set_parameter(msg, msg.topic_id, "msg.topic_id is empty  for " + msg.action);
                         break;
-                    case 'params' :                        
-                        return set_parameter(msg, msg.payload, "msg.payload is empty  for " + msg.action, OPTIONAL_PARAMETER);                        
+                    case 'params' :
+                        return set_parameter(msg, msg.payload, "msg.payload is empty  for " + msg.action, OPTIONAL_PARAMETER);
                         break;
                     case 'values':
                         return set_parameter(msg, msg.payload, "msg.payload is empty  for " + msg.action);
@@ -144,14 +144,14 @@ module.exports = function (RED) {
                         };
                 }
             }
-            
-            function call_m2x(parameters, msg){        
+
+            function call_m2x(parameters, msg){
                 log.debug("TOPIC [" + topic + "] ACTIONS [" +msg.action + "]");
                 _this.m2xClient[topic][msg.action].apply(_this.m2xClient[topic], parameters, function(msg, response) {
                         if(response && response.json) {
-                            try{ 
+                            try{
                               log.debug("FINAL OUTPUT " +JSON.stringify(response.json));
-                              var res_msg = {};                               
+                              var res_msg = {};
                               res_msg.payload = response.json;
                               res_msg.statusCode = response.status;
                             } catch(e) {
@@ -159,9 +159,9 @@ module.exports = function (RED) {
                               res_msg.statusCode = OUTPUT_PARSE_ERROR;
                               res_msg.payload = "Cannot extract M2X output";
                             }
-                        }                        
+                        }
                         _this.node.send(res_msg);
-                });                     
+                });
             };
         });
 
@@ -174,11 +174,11 @@ module.exports = function (RED) {
          * @returns {undefined}
          */
         function set_parameter(msg, msg_field, error_msg, optional) {
-            if (typeof (msg_field) === 'undefined') {               
+            if (typeof (msg_field) === 'undefined') {
                 if (optional === true) {
                     log.info(error_msg + " Not mandatory, continue without");
                     return; // Returns undefined
-                } 
+                }
                 _this.handle_msg_failure(msg, INPUT_ERROR_CODE, error_msg);
                 throw "Cannot find message field " + error_msg;
             } else {
