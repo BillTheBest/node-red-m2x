@@ -11,7 +11,7 @@
     "type": "git",
     "url": "https://github.com/attm2x/node-red-m2x.git"
   },
-  "license": "Apache",
+  "license": "MIT",
   "keywords": [
     "node-red",
     "m2x"
