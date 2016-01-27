@@ -30,7 +30,7 @@ The user will set the following message properties:
 <ul>
     <li> msg.topic - The type of object to act on - distribution, device, chart, key.
     <li> msg.action - An action to be applied for this type of object - The second level entry in the below list. (catalog for example)
-    <li> msg.payload - A json that represents the body for the rest API, only if such is defiend.
+    <li> msg.payload - A json that represents the body for the rest API, only if such is defined.
     <li> msg.topic_id - A unique id for either device, distribution, key or chart
     <li> msg.sub_topic_id - Defines the unique instance of sub topic such as distributon's device.
 
