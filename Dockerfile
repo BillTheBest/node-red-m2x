@@ -1,4 +1,4 @@
-FROM node:5.3
+FROM node:4.2
 
 RUN npm install -g node-red
 
