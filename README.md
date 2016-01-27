@@ -426,6 +426,26 @@ msg.payload = { "stream": "heat",  <br>
     </div>
 </div>
 
+## Development
+
+This repository includes a `Dockerfile` that makes it easier to launch a local instance of node-red and test the M2X node.
+
+Make sure to have a running version of docker on your computer.
+
+### Building the image
+
+```bash
+make build
+```
+
+### Creating the container
+
+```bash
+make create
+```
+
+After executing those steps, you will get a new container ready for development, you can see it by executing `docker ps -a` and start it with `docker start node-red`. Once the container is ready, node-red will be running and listening for connections on the port 1880 of your docker host.
+
 ## Helpful Resources ##
 
 * [Signup for an AT&T M2X Account](https://m2x.att.com/signup)
