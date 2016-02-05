@@ -1,12 +1,23 @@
-<script type="text/x-red" data-template-name="m2x feed">
-    <div class="form-row">
-        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-config-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-apiKey"><i class="icon-bookmark"></i> API key</label>
-        <input type="text" id="node-config-input-apiKey" placeholder="">
-    </div>
+<script type="text/javascript">
+    RED.nodes.registerType('m2x', {
+        category: 'storage-output',
+        color: "#1996c7",
+        defaults: {
+            feed: {type: "m2x feed"},
+            name: {value: ""}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "att.png",
+        align: "right",
+        label: function () {
+            var feedNode = RED.nodes.node(this.feed);
+            return this.name || (feedNode ? feedNode.label() : "m2x");
+        },
+        labelStyle: function () {
+            return this.name ? "node_label_italic" : "";
+        }
+    });
 </script>
 
 <script type="text/javascript">
@@ -34,6 +45,17 @@
     <div class="form-row">
         <label for="node-input-feed"><i class="icon-tag"></i> Feed</label>
         <input type="text" id="node-input-feed">
+    </div>
+</script>
+
+<script type="text/x-red" data-template-name="m2x feed">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-apiKey"><i class="icon-bookmark"></i> API key</label>
+        <input type="text" id="node-config-input-apiKey" placeholder="Your API Key">
     </div>
 </script>
 
@@ -461,27 +483,3 @@ msg.payload = { "stream": "heat",  <br>
     </div>
 </div>
 </script>
-
-<script type="text/javascript">
-    RED.nodes.registerType('m2x', {
-        category: 'storage-output',
-        color: "#1996c7",
-        defaults: {
-            feed: {type: "m2x feed"},
-            name: {value: ""}
-        },
-        inputs: 1,
-        outputs: 1,
-        icon: "att.png",
-        align: "right",
-        label: function () {
-            var feedNode = RED.nodes.node(this.feed);
-            return this.name || (feedNode ? feedNode.label() : "m2x");
-        },
-        labelStyle: function () {
-            return this.name ? "node_label_italic" : "";
-        }
-    });
-</script>
-
-
