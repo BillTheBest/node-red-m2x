@@ -41,13 +41,6 @@ module.exports = function (RED) {
         }
     }
 
-    function M2XFeedNode(n) {
-        RED.nodes.createNode(this, n);
-        this.apiKey = n.apiKey;
-        this.name   = n.name;
-    }
-    RED.nodes.registerType("m2x feed", M2XFeedNode);
-
     function M2XNode(config) {
         RED.nodes.createNode(this, config);
 
@@ -210,7 +203,7 @@ module.exports = function (RED) {
                         errorMessage = result.json;
                     }
                 } else {
-                    errorMessage = "Unknown Error";
+                    errorMessage = "Unknown Error: ";
                 }
 
                 handleFailure(msg, result.status, errorMessage);
