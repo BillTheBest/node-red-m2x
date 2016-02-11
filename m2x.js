@@ -186,6 +186,7 @@ module.exports = function (RED) {
                         errorMessage = result.json;
                     }
                 } else {
+                    node.warn("Failed to parse error response as JSON")
                     errorMessage = "Unknown Error: " + result.raw;
                 }
 
@@ -193,7 +194,8 @@ module.exports = function (RED) {
             } else {
                 node.log("Successful M2X API call: " + result.status);
                 if (typeof result.json === "undefined") {
-                    msg.payload = result;
+                    node.warn("Failed to parse response as JSON")
+                    msg.payload = result.raw;
                 } else {
                     msg.payload = result.json;
                 }
