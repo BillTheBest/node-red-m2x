@@ -56,7 +56,6 @@ module.exports = function (RED) {
             if (m2xClient === undefined) {
                 return node.error("Missing m2x feed configuration");
             }
-            node.warn("Key: " + feedNode.apiKey);
 
             availableObjectsRegex = /distributions\b|devices\b|charts\b|keys\b/
             if(availableObjectsRegex.exec(msg.topic) === null) {
