@@ -202,7 +202,7 @@ module.exports = function (RED) {
                         errorMessage = result.json;
                     }
                 } else {
-                    errorMessage = "Unknown Error: ";
+                    errorMessage = "Unknown Error: " + result.raw;
                 }
 
                 handleFailure(msg, result.status, errorMessage);
