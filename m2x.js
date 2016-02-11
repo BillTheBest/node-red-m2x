@@ -29,18 +29,6 @@ module.exports = function (RED) {
         return methods;
     }
 
-    function cleanForNextNode(msg) {
-        // CF: Clear the clatter for the next node
-        try {
-            delete msg.topic;
-            delete msg.topic_id;
-            delete msg.sub_topic_id;
-            delete msg.action;
-        } catch (e) {
-           log.error("WARNING - Cannot delete msg input field, probably working on STRICT mode")
-        }
-    }
-
     function M2XNode(config) {
         RED.nodes.createNode(this, config);
 
@@ -168,25 +156,22 @@ module.exports = function (RED) {
         }
 
         function handleFailure(msg, statusCode, reason) {
-            try {
-                if (typeof statusCode === "undefined") {
-                    node.error("No result was found, setting error msg to 500 - General Error");
-                    msg.statusCode = SERVER_ERROR_CODE;
-                } else {
-                    node.warn("Error code returned: " + statusCode);
-                    msg.statusCode = statusCode;
-                }
-                if (typeof reason === "undefined") {
-                    msg.payload = {};
-                } else if (!reason.body) {
-                    msg.payload = reason;
-                } else {
-                    msg.payload = reason.body;
-                }
-            } finally {
-                cleanForNextNode(msg);
-                node.send(msg);
+            if (typeof statusCode === "undefined") {
+                node.error("No result was found, setting error msg to 500 - General Error");
+                msg.statusCode = SERVER_ERROR_CODE;
+            } else {
+                node.warn("Error code returned: " + statusCode);
+                msg.statusCode = statusCode;
             }
+            if (typeof reason === "undefined") {
+                msg.payload = {};
+            } else if (!reason.body) {
+                msg.payload = reason;
+            } else {
+                msg.payload = reason.body;
+            }
+
+            node.send(msg);
         }
 
         function handleResponse(msg, result) {
@@ -214,7 +199,6 @@ module.exports = function (RED) {
                     msg.payload = result.json;
                 }
 
-                cleanForNextNode(msg);
                 node.send(msg);
             }
         }
