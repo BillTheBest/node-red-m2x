@@ -55,13 +55,15 @@ module.exports = function (RED) {
         var node = this;
         var m2xClient;
 
-        this.on("input", function (msg) {
-            if (typeof feedNode === "undefined") {
-                this.error("Missing m2x feed configuration");
-                return handleFailure(msg, 401, "Failure - missing M2X feed configuration");
-            }
-
+        if (feedNode) {
             m2xClient = new m2x(feedNode.apiKey, M2X_ENDPOINT);
+        }
+
+        this.on("input", function (msg) {
+            if (m2xClient === undefined) {
+                return node.error("Missing m2x feed configuration");
+            }
+            node.warn("Key: " + feedNode.apiKey);
 
             availableObjectsRegex = /distributions\b|devices\b|charts\b|keys\b/
             if(availableObjectsRegex.exec(msg.topic) === null) {
