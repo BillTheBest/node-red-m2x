@@ -1,6 +1,5 @@
 module.exports = function (RED) {
     var m2x   = require("m2x");
-    var log   = require("log-driver").logger;
     var async = require("async");
 
     var M2X_ENDPOINT = "https://api-m2x.att.com/v2";
@@ -73,9 +72,9 @@ module.exports = function (RED) {
                     var error, parameter = null;
                     try {
                         parameter = parseArgument(item, msg);
-                        log.debug("PARAMETER [" + item + "] Value [" + parameter +"]");
+                        node.log("PARAMETER [" + item + "] Value [" + parameter +"]");
                     } catch (e){
-                        log.debug("ERROR "+ e);
+                        node.log("ERROR "+ e);
                         error = e;
                     }
                     callback(error, parameter);
@@ -84,7 +83,7 @@ module.exports = function (RED) {
                     if(!error) {
                         m2xRequest(parameters, msg);
                     } else {
-                        log.error("Failed to make request to M2X: " + err);
+                        node.log("Failed to make request to M2X: " + err);
                         var errorMessage = {};
                         errorMessage.statusCode = INPUT_ERROR_CODE;
                         errorMessage.payload = err;
@@ -128,7 +127,7 @@ module.exports = function (RED) {
                     resultMsg.payload    = response.json;
                     resultMsg.statusCode = response.status;
                 } else {
-                    log.error("Failed to parse " + response + " as JSON, will return error instead");
+                    node.log("Failed to parse " + response + " as JSON, will return error instead");
                     resultMsg.statusCode = 500;
                     resultMsg.payload = "Cannot extract M2X output: " + response;
                 }
@@ -192,7 +191,7 @@ module.exports = function (RED) {
 
                 handleFailure(msg, result.status, errorMessage);
             } else {
-                log.debug("Successful M2X API call: " + result.status);
+                node.log("Successful M2X API call: " + result.status);
                 if (typeof result.json === "undefined") {
                     msg.payload = result;
                 } else {
