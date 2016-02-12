@@ -44,9 +44,10 @@ module.exports = function (RED) {
                 return node.error("Missing m2x feed configuration");
             }
 
-            availableObjectsRegex = /distributions\b|devices\b|charts\b|keys\b/
-            if(availableObjectsRegex.exec(msg.topic) === null) {
-                return handleFailure(msg, INPUT_ERROR_CODE, "msg.topic should one of distributions, devices, charts or keys");
+            availableObjects = ["collections", "commands", "devices", "distributions", "jobs", "keys"]
+
+            if(availableObjects.indexOf(msg.topic) === -1) {
+                return handleFailure(msg, INPUT_ERROR_CODE, "msg.topic should one of " + availableObjects.join(", "));
             }
 
             var obj = m2xClient[msg.topic];

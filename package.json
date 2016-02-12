@@ -3,7 +3,7 @@
   "version": "0.0.28",
   "description": "A Node-RED node to AT&T M2X",
   "dependencies": {
-    "m2x": "2.1.9",
+    "m2x": "4.0.0",
     "async": "0.9.0"
   },
   "repository": {
