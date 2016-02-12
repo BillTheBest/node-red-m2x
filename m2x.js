@@ -106,8 +106,6 @@ module.exports = function (RED) {
                     return setParameter(msg, msg.payload, "msg.payload is empty for " + msg.action);
                     break;
                 case "name":
-                case "triggerId":
-                case "triggerName":
                 case "format":
                 case "names":
                 case "serial":
