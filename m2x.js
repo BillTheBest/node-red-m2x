@@ -4,9 +4,6 @@ module.exports = function (RED) {
 
     var M2X_ENDPOINT = "https://api-m2x.att.com/v2";
 
-    var SERVER_ERROR_CODE = 500;
-    var INPUT_ERROR_CODE  = 400;
-
     var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
     var ARGUMENT_NAMES = /([^\s,]+)/g;
 
@@ -47,7 +44,7 @@ module.exports = function (RED) {
             availableObjects = ["collections", "commands", "devices", "distributions", "jobs", "keys"]
 
             if(availableObjects.indexOf(msg.topic) === -1) {
-                return handleFailure(msg, INPUT_ERROR_CODE, "msg.topic should one of " + availableObjects.join(", "));
+                return node.error("msg.topic should be one of " + availableObjects.join(", "), msg);
             }
 
             var obj = m2xClient[msg.topic];
@@ -55,12 +52,11 @@ module.exports = function (RED) {
             // Get all methods and validate against msg.action
             var methods = getAllMethods(obj);
             if (methods.indexOf(msg.action) === -1) {
-                this.error("Invalid action on message");
-                return handleFailure(msg, INPUT_ERROR_CODE, "msg.action must be one of " + methods.join(", "));
+                return node.error("msg.action must be one of " + methods.join(", "), msg);
             }
 
             if (typeof obj[msg.action] != "function") {
-                return handleFailure(msg, INPUT_ERROR_CODE, msg.action + "is not a valid method for " + msg.topic);
+                return node.error(msg.action + " is not a valid method for " + msg.topic, msg);
             }
 
             // Get list of parameters
@@ -75,21 +71,15 @@ module.exports = function (RED) {
                         parameter = parseArgument(item, msg);
                         node.log("PARAMETER [" + item + "] Value [" + parameter +"]");
                     } catch (e){
-                        node.log("ERROR "+ e);
                         error = e;
                     }
                     callback(error, parameter);
                 },
                 function(error, parameters) {
-                    if(!error) {
-                        m2xRequest(parameters, msg);
-                    } else {
-                        node.log("Failed to make request to M2X: " + err);
-                        var errorMessage = {};
-                        errorMessage.statusCode = INPUT_ERROR_CODE;
-                        errorMessage.payload = err;
-                        node.send(errorMessage);
+                    if(error) {
+                        return node.error("Error creating the request payload: " + error, msg)
                     }
+                    m2xClient[msg.topic][msg.action].apply(m2xClient[msg.topic], parameters);
                 }
             );
         });
@@ -98,40 +88,25 @@ module.exports = function (RED) {
             switch (item) {
                 case "id":
                 case "key":
-                    return setParameter(msg, msg.topic_id, "msg.topic_id is empty for " + msg.action);
+                    return setParameter(msg, msg.topic_id, "msg.topic_id is empty for '" + msg.action + "'");
                     break;
                 case "params":
-                    return setParameter(msg, msg.payload, "msg.payload is empty for " + msg.action, true);
+                    return setParameter(msg, msg.payload, "msg.payload is empty for '" + msg.action + "'", true);
                     break;
                 case "values":
-                    return setParameter(msg, msg.payload, "msg.payload is empty for " + msg.action);
+                    return setParameter(msg, msg.payload, "msg.payload is empty for '" + msg.action + "'");
                     break;
                 case "name":
                 case "format":
                 case "names":
                 case "serial":
-                    return setParameter(msg, msg.sub_topic_id, "msg.sub_topic_id is empty for " + msg.action);
+                    return setParameter(msg, msg.sub_topic_id, "msg.sub_topic_id is empty for '" + msg.action + "'");
                     break;
                 case "callback":
-                    return function (error, response) {
-                        handleResponse(msg, error, response);
+                    return function (response) {
+                        handleResponse(msg, response);
                     };
             }
-        }
-
-        function m2xRequest(parameters, msg){
-            m2xClient[msg.topic][msg.action].apply(m2xClient[msg.topic], parameters, function(msg, response) {
-                var resultMsg = {};
-                if(response && response.json) {
-                    resultMsg.payload    = response.json;
-                    resultMsg.statusCode = response.status;
-                } else {
-                    node.log("Failed to parse " + response + " as JSON, will return error instead");
-                    resultMsg.statusCode = 500;
-                    resultMsg.payload = "Cannot extract M2X output: " + response;
-                }
-                node.send(resultMsg);
-            });
         }
 
         /**
@@ -142,65 +117,43 @@ module.exports = function (RED) {
          * @param {type} optional
          */
         function setParameter(msg, field, errorMessage, optional) {
-            if (typeof field === "undefined") {
-                if (optional === true) {
+            if (!field) {
+                if (optional) {
                     return;
                 }
-                handleFailure(msg, INPUT_ERROR_CODE, errorMessage);
-                throw "Cannot find message field " + errorMessage;
+                throw errorMessage;
             } else {
                 return field;
             }
         }
 
-        function handleFailure(msg, statusCode, reason) {
-            if (typeof statusCode === "undefined") {
-                node.error("No result was found, setting error msg to 500 - General Error", msg);
-                msg.statusCode = SERVER_ERROR_CODE;
-            } else {
-                node.warn("Error code returned: " + statusCode);
-                msg.statusCode = statusCode;
+        function handleResponse(msg, response) {
+            if (!response) {
+                return node.error("Failed to get a response from M2X API");
             }
-            if (typeof reason === "undefined") {
-                msg.payload = {};
-            } else if (!reason.body) {
-                msg.payload = reason;
+
+            node.statusCode = response.status;
+
+            if (!response.json) {
+                node.warn("Failed to parse response as JSON");
+                msg.payload = response.raw;
             } else {
-                msg.payload = reason.body;
+                msg.payload = response.json;
+            }
+
+            if (response.isError()) {
+                var errorMessage = "Error reported from M2X API";
+
+                if (msg.payload.message) {
+                    errorMessage += ": " + msg.payload.message;
+                }
+
+                node.error(errorMessage, msg);
+            } else {
+                node.log("Successful M2X API call: " + response.status);
             }
 
             node.send(msg);
-        }
-
-        function handleResponse(msg, result) {
-            if (!result || !result.status) {
-                node.error("General Error on M2X node", msg);
-                handleFailure(msg, SERVER_ERROR_CODE, "General Error");
-            } else if (result.isError()) {
-                var errorMessage;
-                if (result.json) {
-                    if (result.json.message) {
-                        errorMessage = result.json.message;
-                    } else {
-                        errorMessage = result.json;
-                    }
-                } else {
-                    node.warn("Failed to parse error response as JSON")
-                    errorMessage = "Unknown Error: " + result.raw;
-                }
-
-                handleFailure(msg, result.status, errorMessage);
-            } else {
-                node.log("Successful M2X API call: " + result.status);
-                if (typeof result.json === "undefined") {
-                    node.warn("Failed to parse response as JSON")
-                    msg.payload = result.raw;
-                } else {
-                    msg.payload = result.json;
-                }
-
-                node.send(msg);
-            }
         }
     }
     RED.nodes.registerType("m2x", M2XNode);
