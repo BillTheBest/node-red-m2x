@@ -17,8 +17,8 @@
   ],
   "node-red": {
     "nodes": {
-      "m2x": "m2x.js",
-      "m2x feed": "m2x_feed.js"
+      "m2x": "m2x/m2x.js",
+      "m2x feed": "m2x_feed/m2x_feed.js"
     }
   },
   "author": {
