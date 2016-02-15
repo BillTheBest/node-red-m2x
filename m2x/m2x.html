@@ -44,13 +44,13 @@
 <script type="text/x-red" data-help-name="m2x">
     <p>Receives a message and uses its properties in order to make a request to the M2X API</p>
 
-    <p>This nodes uses the <a href="https://github.com/attm2x/m2x-nodejs" target="_blank">M2X NodeJS client library</a> to make requests to M2X. Message properties are related to methods of the client library</p>
+    <p>This node uses the <a href="https://github.com/attm2x/m2x-nodejs" target="_blank">M2X NodeJS client library</a> to make requests to M2X. Message properties are related to methods of the client library.</p>
 
     <p>
     The message should contain the following properties:<br>
     * <b>msg.topic</b> (required) - The type of object to act on (collections, commands, devices, distributions, jobs, keys)<br>
     * <b>msg.action</b> (required) - An action to be applied for this type of object, corresponds with the methods defined for the entity specified in <b>msg.topic</b><br>
-    * <b>msg.topic_id</b> (optional) - The unique identifier to be passed to the method defined on <b>msg.action</b><br>
+    * <b>msg.topic_id</b> (optional) - The unique identifier to be passed to the method defined in <b>msg.action</b><br>
     * <b>msg.sub_topic_id</b> (optional) - The unique identifier of an instance relative to the <b>msg.topic_id</b> (e.g.: msg.topic_id could be a device id and msg.sub_topic_id could be a stream or trigger id)<br>
     * <b>msg.payload</b> (optional) - A JSON object that will be the body of the request when applicable.
     </p>
@@ -58,5 +58,5 @@
     <p>
     Refer to the <a href="https://github.com/attm2x/node-red-m2x" target="_blank">node documentation</a> for more information about the node.<br>
     Refer to the <a href="https://github.com/attm2x/m2x-nodejs" target="_blank">M2X NodeJS client library documentation</a> for more information about its functionality.<br>
-    Refer to the <a href="https://m2x.att.com/developer/documentation/v2/overview" target="_blank">M2X official documentation</a> for more information about the platform</p>
+    Refer to the <a href="https://m2x.att.com/developer/documentation/v2/overview" target="_blank">M2X API documentation</a> for more information about the platform</p>
 </script>

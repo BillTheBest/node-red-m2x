@@ -2,23 +2,19 @@
 
 # Node-RED M2X Node
 
-A [Node-RED](http://nodered.org) node used to store time-series data in [AT&T's M2X](https://m2x.att.com). This node is also included out-of-the-box with [AT&T's Flow Designer](http://flow.att.com).
+A [Node-RED](http://nodered.org) node used to interact with the [AT&T M2X](https://m2x.att.com) API. This node is also included out-of-the-box with [AT&T's Flow Designer](http://flow.att.com).
 
 [AT&T M2X](http://m2x.att.com) is a cloud-based fully managed time-series data storage service for network connected machine-to-machine (M2M) devices and the Internet of Things (IoT).
 
 ## Installation
 
-This node is available as an [npm package](https://www.npmjs.com/package/node-red-m2x). Run the following command in the root directory of your Node-RED Directory:
-
-```bash
-npm install node-red-m2x
-```
+The `node-red-m2x` node is available as an [npm package](https://www.npmjs.com/package/node-red-m2x). Install the node per the [Node-RED documentation](http://nodered.org/docs/getting-started/adding-nodes.html#installing-npm-packaged-nodes).
 
 ## Usage
 
 Use node-red-m2x to store time-series data from anything in [AT&T M2X](http://m2x.att.com) and manage your M2X devices.
 
-On its core, this node uses the [M2X NodeJS client library](https://github.com/attm2x/m2x-nodejs) and maps the `msg` properties to prototypes and methods of said library.
+At its core, this node uses the [M2X NodeJS client library](https://github.com/attm2x/m2x-nodejs) and maps the `msg` properties to prototypes and methods of said library.
 
 The accepted properties are:
 - **msg.topic** (required) - The type of object to act on, it corresponds with the prototypes defined on the M2X NodeJS client libraries (collections, commands, devices, distributions, jobs, keys).
@@ -81,9 +77,9 @@ make build
 make create
 ```
 
-After executing those steps, you will get a new container ready for development, you can see it by executing `docker ps -a` and start it with `docker start node-red`. Once the container is ready, node-red will be running and listening for connections on the port 1880 of your docker host.
+After executing those steps, you will have a new container ready for development, you can see it by executing `docker ps -a` and start it with `docker start node-red`. Once the container is ready, node-red will be running and listening for connections on port 1880 of your docker host.
 
-## Helpful Resources ##
+## Helpful Resources
 
 * [Signup for an AT&T M2X Account](https://m2x.att.com/signup)
 * [M2X API Documentation](https://m2x.att.com/developer/documentation/overview)
@@ -92,6 +88,6 @@ After executing those steps, you will get a new container ready for development,
 * [Node-RED Documentation](http://nodered.org/docs/)
 * [Running Node-Red](http://nodered.org/docs/getting-started/running.html)
 
-## License ##
+## License
 
 This software is provided under the MIT license. See [LICENSE](LICENSE) for applicable terms.
