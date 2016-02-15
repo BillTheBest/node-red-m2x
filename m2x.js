@@ -41,7 +41,7 @@ module.exports = function (RED) {
 
         this.on("input", function (msg) {
             if (m2xClient === undefined) {
-                return node.error("Missing m2x feed configuration");
+                return node.error("Missing m2x feed configuration", msg);
             }
 
             availableObjects = ["collections", "commands", "devices", "distributions", "jobs", "keys"]
@@ -155,7 +155,7 @@ module.exports = function (RED) {
 
         function handleFailure(msg, statusCode, reason) {
             if (typeof statusCode === "undefined") {
-                node.error("No result was found, setting error msg to 500 - General Error");
+                node.error("No result was found, setting error msg to 500 - General Error", msg);
                 msg.statusCode = SERVER_ERROR_CODE;
             } else {
                 node.warn("Error code returned: " + statusCode);
@@ -174,7 +174,7 @@ module.exports = function (RED) {
 
         function handleResponse(msg, result) {
             if (!result || !result.status) {
-                node.error("General Error on M2X node");
+                node.error("General Error on M2X node", msg);
                 handleFailure(msg, SERVER_ERROR_CODE, "General Error");
             } else if (result.isError()) {
                 var errorMessage;
