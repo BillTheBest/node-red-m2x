@@ -69,7 +69,6 @@ module.exports = function (RED) {
                     var error, parameter = null;
                     try {
                         parameter = parseArgument(item, msg);
-                        node.log("PARAMETER [" + item + "] Value [" + parameter +"]");
                     } catch (e){
                         error = e;
                     }
@@ -152,8 +151,6 @@ module.exports = function (RED) {
                 }
 
                 node.error(errorMessage, msg);
-            } else {
-                node.log("Successful M2X API call: " + response.status);
             }
 
             node.send(msg);
