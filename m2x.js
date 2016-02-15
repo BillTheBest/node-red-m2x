@@ -79,6 +79,7 @@ module.exports = function (RED) {
                     if(error) {
                         return node.error("Error creating the request payload: " + error, msg)
                     }
+                    node.status({ fill: "red", shape: "dot", text: "Runnig" });
                     m2xClient[msg.topic][msg.action].apply(m2xClient[msg.topic], parameters);
                 }
             );
@@ -128,6 +129,8 @@ module.exports = function (RED) {
         }
 
         function handleResponse(msg, response) {
+            node.status({});
+
             if (!response) {
                 return node.error("Failed to get a response from M2X API");
             }
